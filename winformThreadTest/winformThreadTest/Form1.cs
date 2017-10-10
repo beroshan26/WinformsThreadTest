@@ -394,6 +394,35 @@ namespace winformThreadTest
             }
             MessageBox.Show(s.ToString());
         }
+
+        readonly Service _service = new Service();
+        private void button20_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+            var stringTask = Task.Factory.StartNew(() => _service.GetStrings());
+            stringTask.ContinueWith(a =>
+            {
+                foreach (var str in a.Result)
+                {
+                    listBox1.Items.Add(str);
+                }
+            },TaskScheduler.FromCurrentSynchronizationContext());
+        }
+
+        private async void button21_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Clear();
+            var result = await GeSvcData();
+            foreach (var str in result)
+            {
+                listBox1.Items.Add(str);
+            }
+        }
+
+        private Task<List<string>> GeSvcData()
+        {
+            return Task.Run(() => _service.GetStrings());
+        }
     }
 
     public class Person : INotifyPropertyChanged
